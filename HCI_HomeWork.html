@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width">
+    <title>HCI_HomeWork</title>
+    <style type="text/css">
+        #canvas {
+            margin: 10px;
+            padding: 10px;
+            border: 1px solid black;
+            background: #ffffff;
+        }
+    </style>
+    <script type="text/javascript">
+        function init() {
+            let ctx = document.getElementById("canvas").getContext('2d');
+            return ctx;
+        }
+        // 기본 배경 객체
+        function backGround() {
+            this.Black = '#000000';
+            this.GrayBlack = '#333333';
+            this.Gray = '#666666';
+            this.LightGray = '#999999';
+            this.WhiteBlue = '#CCFFFF';
+            this.WhiteGray = '#CCCCCC';
+            this.White = '#FFFFFF';
+            this.GreenBlue = '#00FF99';
+            this.Pi = Math.PI * 2;   //360도
+            this.Green = '#00FF00';
+            this.LightBlue = '#6666FF';
+            this.Yellow = '#FFFF33';
+            this.Red = '#FF0000';
+        }
+        backGround.prototype.drawRect = function (ctx, color, x, y, w, h) {
+            ctx.fillStyle = color;
+            ctx.fillRect(x, y, w, h);
+        }
+        backGround.prototype.drawText = function (ctx, size, color, text, x, y) {
+            ctx.font = size + ' Consolas';
+            ctx.fillStyle = color;
+            ctx.fillText(text, x, y);
+        }
+        backGround.prototype.drawArc = function (ctx, st_color, color, x, y, r) {
+            ctx.beginPath();
+            ctx.strokeStyle = st_color;
+            ctx.fillStyle = color;
+            ctx.arc(x, y, r, 0, this.Pi, false);
+            ctx.stroke();
+            ctx.fill();
+            ctx.closePath();
+        }
+        backGround.prototype.drawPartArc = function (ctx, st_color, color, x, y, r, seta1, seta2) {
+            ctx.beginPath();
+            ctx.strokeStyle = st_color;
+            ctx.fillStyle = color;
+            ctx.arc(x, y, r, seta1, seta2, false);
+            ctx.stroke();
+            ctx.fill();
+            ctx.closePath();
+        }
+        backGround.prototype.drawRoundRect = function (ctx, st_color, color, x, y, xm1, ym1, cx1, cy1,
+            x1, y1, xm2, ym2, cx2, cy2) {
+            ctx.beginPath();
+            ctx.strokeStyle = st_color;
+            ctx.fillStyle = color;
+            ctx.moveTo(x, y);
+            ctx.lineTo(xm1, ym1);
+            ctx.quadraticCurveTo(cx1, cy1, x1, y1);
+            ctx.lineTo(xm2, ym2);
+            ctx.quadraticCurveTo(cx2, cy2, x, y);
+            ctx.fill();
+            ctx.stroke();
+            ctx.closePath();
+        }
+        backGround.prototype.drawSpeechBubble = function (ctx, x, y, w, h) {
+            ctx.beginPath();    // 말풍선
+            ctx.fillStyle = this.White;
+            ctx.moveTo(x, y);
+            ctx.lineTo(x, y - h);
+            ctx.lineTo(x + w, y - h);
+            ctx.lineTo(x + w, y);
+            ctx.lineTo(x + w / 2, y);
+            ctx.lineTo(x + w / 4, y + h / 3);
+            ctx.lineTo(x + w / 10, y);
+            ctx.lineTo(x, y);
+            ctx.fill();
+            ctx.closePath();
+        }
+        backGround.prototype.drawIcon = function (ctx, color, x, y, r, isOn) {
+            this.drawArc(ctx, color, color, x, y, r);
+            this.drawArc(ctx, this.White, this.White, x, y, 2 * r / 3);
+            this.drawArc(ctx, color, color, x - 2 * r / 9, y, r - 8 * r / 9);
+            this.drawArc(ctx, color, color, x + 2 * r / 9, y, r - 8 * r / 9);
+            if (!isOn) {
+                this.drawArc(ctx, this.GrayBlack, this.GrayBlack, x + 2 * r / 3, y + 2 * r / 3, r - 5 * r / 9);
+                this.drawArc(ctx, this.GrayBlack, this.LightGray, x + 2 * r / 3, y + 2 * r / 3, r - 11 * r / 18);
+                this.drawArc(ctx, this.GrayBlack, this.GrayBlack, x + 2 * r / 3, y + 2 * r / 3, r - 5 * r / 6);
+            }
+            else {
+                this.drawArc(ctx, this.GrayBlack, this.GrayBlack, x + 2 * r / 3, y + 2 * r / 3, r - 5 * r / 9);
+                this.drawArc(ctx, this.Green, this.Green, x + 2 * r / 3, y + 2 * r / 3, r - 2 * r / 3);
+            }
+        }
+        backGround.prototype.drawAboveMenu = function (ctx, w, h) {
+            ctx.globalCompositeOperation = 'source-over'; //늦게 들어온 도형이 맨 앞으로
+            this.drawRect(ctx, this.GrayBlack, 0, 0, w, h);
+        }
+        backGround.prototype.drawMiddleMenu = function (ctx, x, y) {
+            this.drawRect(ctx, this.Gray, x, y, 600, 550);
+        }
+        backGround.prototype.drawUnderMenu = function (ctx) {
+            this.drawRect(ctx, this.Black, 0, 550, 600, 600);
+
+            ctx.beginPath();
+            ctx.moveTo(24, 580);
+            ctx.lineTo(24, 564);
+            ctx.lineTo(40, 564);
+            ctx.lineTo(40, 584);
+            ctx.lineTo(37, 580);
+            ctx.lineTo(24, 580);
+            ctx.fillStyle = this.WhiteBlue;
+            ctx.fill();
+            ctx.closePath();
+
+            this.drawArc(ctx, this.GrayBlack, this.GrayBlack, 32, 572, 6);
+            this.drawArc(ctx, this.WhiteBlue, this.WhiteBlue, 29, 572, 1);
+            this.drawArc(ctx, this.WhiteBlue, this.WhiteBlue, 35, 572, 1);
+
+            this.drawArc(ctx, this.WhiteBlue, this.WhiteBlue, 150, 572, 3);
+
+            ctx.beginPath();
+            ctx.moveTo(140, 570);
+            ctx.lineTo(144, 570);
+            ctx.bezierCurveTo(149, 582, 151, 572, 158, 584);
+            ctx.lineTo(145, 584);
+            ctx.lineTo(145, 580);
+            ctx.quadraticCurveTo(140, 580, 140, 570);
+            ctx.fill();
+            ctx.closePath();
+
+            this.drawArc(ctx, this.WhiteBlue, this.WhiteBlue, 290, 575, 6);
+
+            ctx.beginPath();
+            ctx.fillStyle = this.WhiteBlue;
+            ctx.moveTo(295, 578);
+            ctx.lineTo(299, 584);
+            ctx.lineTo(298, 585);
+            ctx.lineTo(292, 579);
+            ctx.fill();
+
+            this.drawArc(ctx, this.GrayBlack, this.GrayBlack, 290, 575, 5);
+
+            this.drawText(ctx, '18px', this.WhiteBlue, '@', 435, 580);
+
+            this.drawArc(ctx, this.GreenBlue, this.GreenBlue, 568, 575, 10);
+
+            this.drawArc(ctx, this.White, this.White, 568, 575, 7);
+
+            this.drawArc(ctx, this.GreenBlue, this.GreenBlue, 566, 575, 1);
+            this.drawArc(ctx, this.GreenBlue, this.GreenBlue, 570, 575, 1);
+
+            this.drawArc(ctx, this.GrayBlack, this.GreenBlue, 574, 582, 4);
+        }
+        backGround.prototype.changeColor = function (isBright) {
+            if (isBright) {
+                this.Black = '#FF00FF';
+<<<<<<< HEAD
+                this.GrayBlack = '#FF33FF';
+                this.Gray = '#FF66FF';
+                this.LightGray = '#FF99FF';
+                this.WhiteGray = '#FFCCFF';
+=======
+                this.GrayBlack = '#FF66FF';
+                this.Gray = '#FFCCFF';
+>>>>>>> 22c2810b8aaa8c17cb37fefbd5aacd188f5308ee
+            }
+            else {
+                this.Black = '#000000';
+                this.GrayBlack = '#333333';
+                this.Gray = '#666666';
+<<<<<<< HEAD
+                this.LightGray = '#999999';
+                this.WhiteGray = '#CCCCCC';
+=======
+>>>>>>> 22c2810b8aaa8c17cb37fefbd5aacd188f5308ee
+            }
+        }
+        function draw1(ctx, isBright) {
+            let menu1 = new backGround();
+            menu1.changeColor(isBright);
+            //배경색 설정
+            menu1.drawAboveMenu(ctx, 600, 150);
+            menu1.drawMiddleMenu(ctx, 0, 150);
+            menu1.drawUnderMenu(ctx);
+            //텍스트 입력
+            menu1.drawText(ctx, '20px', menu1.White, '사용자 설정', 10, 35);
+            menu1.drawText(ctx, '15px', menu1.White, '➜', 550, 30);
+            menu1.drawText(ctx, '15px', menu1.White, '⋮', 590, 30);
+            menu1.drawText(ctx, '20px', menu1.White, 'YoungSeo', 10, 135);
+            menu1.drawText(ctx, '15px', menu1.White, '#0432', 100, 135);
+            menu1.drawText(ctx, '15px', menu1.White, '사용자 설정', 10, 190);
+            menu1.drawText(ctx, '15px', menu1.White, '상태 설정', 50, 240);
+            menu1.drawText(ctx, '15px', menu1.White, '내 계정', 50, 270);
+            menu1.drawText(ctx, '15px', menu1.White, '개인정보 보호 및 보안', 50, 300);
+            menu1.drawText(ctx, '15px', menu1.White, '승인한 앱', 50, 330);
+            menu1.drawText(ctx, '15px', menu1.White, '연결', 50, 360);
+            menu1.drawText(ctx, '15px', menu1.White, 'QR코드 스캔', 50, 390);
+            menu1.drawText(ctx, '15px', menu1.White, '앱 설정', 10, 440);
+            menu1.drawText(ctx, '15px', menu1.White, '음성 및 비디오', 50, 480);
+            menu1.drawText(ctx, '15px', menu1.White, '알림', 50, 510);
+
+            // 도형
+            ctx.strokeStyle = menu1.White;
+            ctx.strokeRect(547, 15, 20, 20);
+
+            //menu1.drawIcon(ctx, menu1.GreenBlue, 45, 80 , 18, true);
+            menu1.drawArc(ctx, menu1.GrayBlack, menu1.GreenBlue, 45, 80, 35); // 프로필
+            menu1.drawArc(ctx, menu1.GrayBlack, menu1.GreenBlue, 70, 100, 10);
+            menu1.drawArc(ctx, menu1.White, menu1.White, 45, 80, 20);
+            menu1.drawArc(ctx, menu1.White, menu1.GreenBlue, 36, 80, 5);
+            menu1.drawArc(ctx, menu1.White, menu1.GreenBlue, 54, 80, 5);
+
+            menu1.drawArc(ctx, menu1.White, menu1.WhiteBlue, 20, 235, 7); // 상태 설정
+            menu1.drawArc(ctx, menu1.White, menu1.GrayBlack, 20, 232, 2);
+            menu1.drawPartArc(ctx, menu1.White, menu1.GrayBlack, 20, 240, 4, menu1.Pi / 2, menu1.Pi);
+
+            menu1.drawRect(ctx, menu1.WhiteBlue, 13, 258, 14, 14); // 내 계정
+            menu1.drawArc(ctx, menu1.White, menu1.GrayBlack, 20, 262, 2);
+            menu1.drawPartArc(ctx, menu1.White, menu1.GrayBlack, 20, 270, 4, menu1.Pi / 2, menu1.Pi);
+
+            ctx.beginPath();    // 개인정보 보호 및 보안
+            ctx.strokeStyle = menu1.WhiteBlue;
+            ctx.fillStyle = menu1.GrayBlack;
+            ctx.moveTo(15, 290);
+            ctx.lineTo(20, 285);
+            ctx.lineTo(25, 290);
+            ctx.quadraticCurveTo(25, 300, 20, 300);
+            ctx.fill();
+            ctx.stroke();
+            ctx.closePath();
+
+            ctx.beginPath();
+            ctx.moveTo(20, 285);
+            ctx.lineTo(20, 290);
+            ctx.lineTo(25, 290);
+            ctx.fillStyle = menu1.WhiteBlue;
+            ctx.strokeStyle = menu1.WhiteBlue;
+            ctx.moveTo(20, 290);
+            ctx.lineTo(15, 290);
+            ctx.quadraticCurveTo(15, 300, 20, 300);
+            ctx.lineTo(20, 290);
+            ctx.fill();
+            ctx.stroke();
+            ctx.closePath();
+
+            menu1.drawRect(ctx, menu1.WhiteBlue, 10, 318, 20, 14); //승인한 앱
+            menu1.drawRect(ctx, menu1.GrayBlack, 11, 319, 18, 12);
+            menu1.drawRect(ctx, menu1.WhiteBlue, 12, 320, 16, 10);
+            menu1.drawRect(ctx, menu1.WhiteBlue, 29, 330, 4, 5);
+            menu1.drawRect(ctx, menu1.WhiteBlue, 24, 328, 10, 3);
+            menu1.drawPartArc(ctx, menu1.GrayBlack, menu1.WhiteBlue, 20, 330, 5, menu1.Pi / 12, menu1.Pi * 0.9);
+            menu1.drawArc(ctx, menu1.GrayBlack, menu1.GrayBlack, 20, 330, 1);
+
+            menu1.drawRect(ctx, menu1.WhiteBlue, 12, 348, 18, 14);  //연결
+            menu1.drawRect(ctx, menu1.GrayBlack, 13, 349, 16, 13);
+            menu1.drawRect(ctx, menu1.WhiteBlue, 10, 362, 22, 2);
+            menu1.drawRect(ctx, menu1.WhiteBlue, 25, 355, 7, 10);
+            ctx.strokeRect(25, 355, 7, 10);
+            menu1.drawRect(ctx, menu1.GrayBlack, 27, 357, 3, 5);
+
+            menu1.drawRect(ctx, menu1.WhiteBlue, 21, 380, 10, 10);  // qr코드 스캔
+            menu1.drawRect(ctx, menu1.WhiteBlue, 10, 380, 10, 10);
+            menu1.drawRect(ctx, menu1.WhiteBlue, 10, 391, 10, 10);
+            menu1.drawRect(ctx, menu1.WhiteBlue, 21, 391, 10, 10);
+            menu1.drawRect(ctx, menu1.GrayBlack, 24, 384, 4, 4);
+            menu1.drawRect(ctx, menu1.GrayBlack, 12, 382, 3, 3);
+            menu1.drawRect(ctx, menu1.GrayBlack, 16, 386, 3, 3);
+            menu1.drawRect(ctx, menu1.GrayBlack, 11, 392, 8, 8);
+
+            menu1.drawRect(ctx, menu1.WhiteBlue, 19, 478, 2, 3); // 음성 및 비디오
+            menu1.drawPartArc(ctx, menu1.WhiteBlue, menu1.WhiteBlue, 20, 473, 5, menu1.Pi, menu1.Pi / 2);
+            menu1.drawPartArc(ctx, menu1.GrayBlack, menu1.GrayBlack, 20, 473, 4, menu1.Pi, menu1.Pi / 2);
+            menu1.drawRoundRect(ctx, menu1.WhiteBlue, menu1.WhiteBlue, 18, 473, 18, 470, 20, 465, 22, 470,
+                22, 473, 20, 478);
+            menu1.drawText(ctx, '10px', menu1.WhiteBlue, '...', 12, 486);
+            menu1.drawRoundRect(ctx, menu1.WhiteBlue, menu1.WhiteBlue, 16, 508, 16, 497, 20, 492, 24, 497,
+                24, 508, 20, 510);  // 알림
+            menu1.drawPartArc(ctx, menu1.WhiteBlue, menu1.WhiteBlue, 20, 516, 10, menu1.Pi * 5 / 8, menu1.Pi * 7 / 8);
+            menu1.drawArc(ctx, menu1.WhiteBlue, menu1.WhiteBlue, 20, 494, 2);
+            menu1.drawPartArc(ctx, menu1.WhiteBlue, menu1.WhiteBlue, 20, 510, 2, menu1.Pi, menu1.Pi / 2);
+            menu1.drawText(ctx, '14px', menu1.Gray, '!', 16, 506);
+        }
+
+        function draw2(ctx, isBright) {
+            let menu2 = new backGround();
+            menu2.changeColor(isBright);
+            menu2.drawAboveMenu(ctx, 600, 80);
+            menu2.drawMiddleMenu(ctx, 0, 80);
+            menu2.drawUnderMenu(ctx);
+
+            //텍스트 삽입
+            menu2.drawText(ctx, '18px', menu2.White, '최근 맨션', 10, 40);
+            menu2.drawText(ctx, '10px', menu2.WhiteGray, '모든 서버', 10, 60);
+            menu2.drawText(ctx, '30px', menu2.White, '≡', 575, 40);
+            menu2.drawText(ctx, '10px', menu2.WhiteGray, '대화를 시작하고, ' +
+                '여기에서 그 내용을 확인하세요!', 180, 100);
+            menu2.drawRect(ctx, menu2.WhiteGray, 10, 300, 580, 100);
+            menu2.drawText(ctx, '10px', menu2.Green, '유용한 팁:', 280, 340);
+            menu2.drawText(ctx, '10px', menu2.Gray, '모든 맨션은 이곳에' +
+                '7일 동안 이공에 저장돼요.', 200, 360);
+
+            //그림 삽입
+            menu2.drawPartArc(ctx, menu2.GrayBlack, menu2.Gray, 300, 170, 40, menu2.Pi / 2, menu2.Pi * 7 / 8);
+            menu2.drawPartArc(ctx, menu2.GrayBlack, menu2.Gray, 300, 170, 40, menu2.Pi / 4, menu2.Pi * 2 / 5);
+            menu2.drawPartArc(ctx, menu2.GrayBlack, menu2.Gray, 300, 170, 40, menu2.Pi * 9 / 10, menu2.Pi / 10);
+            menu2.drawPartArc(ctx, menu2.GrayBlack, menu2.Gray, 300, 170, 32, 0, menu2.Pi * 11 / 12);
+            menu2.drawArc(ctx, menu2.GrayBlack, menu2.Gray, 260, 180, 2);
+            menu2.drawArc(ctx, menu2.GrayBlack, menu2.Gray, 254, 190, 1);
+            menu2.drawArc(ctx, menu2.GrayBlack, menu2.Gray, 330, 200, 1);
+            menu2.drawText(ctx, '12px', menu2.GrayBlack, '*', 328, 148);
+            menu2.drawText(ctx, '20px', menu2.GrayBlack, '*', 260, 136);
+            menu2.drawArc(ctx, menu2.GrayBlack, menu2.Gray, 330, 162, 2);
+            menu2.drawArc(ctx, menu2.GrayBlack, menu2.Gray, 300, 170, 24);
+            menu2.drawArc(ctx, menu2.GrayBlack, menu2.Gray, 300, 170, 16);
+            menu2.drawArc(ctx, menu2.GrayBlack, menu2.Gray, 300, 170, 8);
+            ctx.moveTo(600, 280);
+
+            ctx.beginPath();
+            for (var i = 0; i < 14; i++) {
+                if (i % 2 == 0) {
+                    ctx.bezierCurveTo(600 - i * 20, 285, 600 - 20 * (i + 1) + 10,
+                        265, 600 - 20 * (i + 1), 270);
+                }
+                else {
+                    ctx.bezierCurveTo(600 - i * 20, 270, 600 - 20 * (i + 1),
+                        290, 600 - 20 * (i + 1), 280);
+                }
+            }
+            ctx.quadraticCurveTo(310, 280, 310, 270);
+            ctx.lineTo(310, 200);
+            ctx.quadraticCurveTo(300, 200, 300, 190);
+            ctx.lineTo(300, 172);
+            ctx.quadraticCurveTo(303, 170, 306, 172);
+            ctx.lineTo(306, 188);
+            ctx.moveTo(306, 180);
+            ctx.quadraticCurveTo(309, 178, 312, 180);
+            ctx.lineTo(312, 188);
+            ctx.moveTo(312, 184);
+            ctx.quadraticCurveTo(315, 182, 318, 184);
+            ctx.lineTo(318, 188);
+            ctx.moveTo(318, 186);
+            ctx.quadraticCurveTo(320, 184, 322, 186);
+            ctx.lineTo(322, 195);
+            ctx.quadraticCurveTo(322, 200, 318, 200);
+            ctx.lineTo(318, 260);
+            ctx.quadraticCurveTo(319, 265, 320, 265);
+            for (var i = 0; i < 14; i++) {
+                if (i % 2 == 0) {
+                    ctx.bezierCurveTo(320 + i * 20, 270, 320 + 20 * (i + 1) - 10,
+                        255, 320 + 20 * (i + 1), 255);
+                }
+                else {
+                    ctx.bezierCurveTo(320 + (i + 1) * 20, 255, 320 + 20 * (i + 1),
+                        270, 320 + 20 * (i + 1), 270);
+                }
+            }
+            ctx.moveTo(600, 270);
+            ctx.lineTo(600, 280);
+            ctx.stroke();
+        }
+        function draw3(ctx, isBright) {
+            let menu3 = new backGround();
+            menu3.changeColor(isBright);
+            menu3.drawAboveMenu(ctx, 600, 80);
+            menu3.drawMiddleMenu(ctx, 0, 80);
+            menu3.drawUnderMenu(ctx);
+
+            //텍스트 입력
+            menu3.drawText(ctx, '20px', menu3.White, '친구', 10, 50);
+            menu3.drawText(ctx, '10px', menu3.White, '수락대기중-1명', 10, 120);
+            menu3.drawText(ctx, '15px', menu3.White, '야옹이', 50, 150);
+            menu3.drawText(ctx, '10px', menu3.LightGray, '보낸 친구 요청', 50, 165);
+            menu3.drawText(ctx, '10px', menu3.White, '온라인-1명', 10, 190);
+            menu3.drawText(ctx, '15px', menu3.White, '친구1', 50, 220);
+            menu3.drawText(ctx, '10px', menu3.LightGray, '온라인', 50, 235);
+            menu3.drawText(ctx, '10px', menu3.White, '오프라인-3명', 10, 260);
+            menu3.drawText(ctx, '15px', menu3.White, 'Friend2', 50, 290);
+            menu3.drawText(ctx, '10px', menu3.LightGray, '오프라인', 50, 305);
+            menu3.drawText(ctx, '15px', menu3.White, 'Another', 50, 340);
+            menu3.drawText(ctx, '10px', menu3.LightGray, '오프라인', 50, 355);
+            menu3.drawText(ctx, '15px', menu3.White, 'GoGO', 50, 390);
+            menu3.drawText(ctx, '10px', menu3.LightGray, '오프라인', 50, 405);
+
+            //도형 입력
+            menu3.drawSpeechBubble(ctx, 500, 50, 20, 15);
+
+            menu3.drawArc(ctx, menu3.GrayBlack, menu3.GrayBlack, 520, 36, 7); // 사람모형 플러스
+            menu3.drawText(ctx, '12px', menu3.White, '+', 516, 40);
+            menu3.drawArc(ctx, menu3.White, menu3.White, 560, 40, 4);
+            menu3.drawPartArc(ctx, menu3.White, menu3.White, 560, 55, 8, menu3.Pi / 2, menu3.Pi);
+            menu3.drawText(ctx, '12px', menu3.White, '+', 566, 40);
+
+            menu3.drawIcon(ctx, menu3.LightBlue, 28, 150, 18, false);
+            menu3.drawIcon(ctx, menu3.Yellow, 28, 220, 18, true);
+            menu3.drawIcon(ctx, menu3.Red, 28, 290, 18, false);
+            menu3.drawIcon(ctx, menu3.LightBlue, 28, 340, 18, false);
+            menu3.drawIcon(ctx, menu3.LightBlue, 28, 390, 18, false);
+
+            menu3.drawArc(ctx, menu3.GrayBlack, menu3.GrayBlack, 550, 150, 10);
+            menu3.drawText(ctx, '15px', menu3.Red, 'x', 546, 154);
+
+            menu3.drawArc(ctx, menu3.GrayBlack, menu3.GrayBlack, 510, 220, 10);
+            menu3.drawArc(ctx, menu3.GrayBlack, menu3.GrayBlack, 550, 220, 10);
+            menu3.drawText(ctx, '12px', menu3.White, '📞', 502, 224);
+            menu3.drawSpeechBubble(ctx, 544, 223, 12, 8);
+
+            menu3.drawArc(ctx, menu3.GrayBlack, menu3.GrayBlack, 510, 290, 10);
+            menu3.drawArc(ctx, menu3.GrayBlack, menu3.GrayBlack, 550, 290, 10);
+            menu3.drawText(ctx, '12px', menu3.White, '📞', 502, 294);
+            menu3.drawSpeechBubble(ctx, 544, 293, 12, 8);
+
+            menu3.drawArc(ctx, menu3.GrayBlack, menu3.GrayBlack, 510, 340, 10);
+            menu3.drawArc(ctx, menu3.GrayBlack, menu3.GrayBlack, 550, 340, 10);
+            menu3.drawText(ctx, '12px', menu3.White, '📞', 502, 344);
+            menu3.drawSpeechBubble(ctx, 544, 343, 12, 8);
+
+            menu3.drawArc(ctx, menu3.GrayBlack, menu3.GrayBlack, 510, 390, 10);
+            menu3.drawArc(ctx, menu3.GrayBlack, menu3.GrayBlack, 550, 390, 10);
+            menu3.drawText(ctx, '12px', menu3.White, '📞', 502, 394);
+            menu3.drawSpeechBubble(ctx, 544, 393, 12, 8);
+        }
+    </script>
+</head>
+
+<body>
+    <br>아래 버튼을 눌러 페이지를 열어주세요</br>
+    <canvas id="canvas" width="600" height="600"></canvas>
+    <script type="text/javascript">
+        let ctx = init();
+        let isNum = 1;
+        let isBright = false;
+        let needNum = isNum;
+        let isFirst = true;
+
+        function wake() {
+            if (isFirst) {
+                draw1(ctx, isBright);
+                isFirst = false;
+            }
+            else {
+                if (isNum == 1) {
+                    draw2(ctx, isBright);
+                    isNum = 2;
+                    needNum = isNum;
+                }
+                else if (isNum == 2) {
+                    draw3(ctx, isBright);
+                    isNum = 3;
+                    needNum = isNum;
+                }
+                else if (isNum == 3) {
+                    draw1(ctx, isBright);
+                    isNum = 1;
+                    needNum = isNum;
+                }
+            }
+        }
+
+        function bOrd() {
+            if (isBright) {
+                let btnElement = document.getElementById("Bright");
+                btnElement.value = "밝게?";
+                isBright = false;
+                if (needNum == 1)
+                    draw1(ctx, isBright);
+                else if (needNum == 2)
+                    draw2(ctx, isBright);
+                else if (needNum == 3)
+                    draw3(ctx, isBright);
+            }
+            else {
+                let btnElement = document.getElementById("Bright");
+                btnElement.value = "어둡게?";
+                isBright = true;
+                if (needNum == 1)
+                    draw1(ctx, isBright);
+                else if (needNum == 2)
+                    draw2(ctx, isBright);
+                else if (needNum == 3)
+                    draw3(ctx, isBright);
+            }
+        }
+    </script>
+    <form>
+        <input type="button" id="ChangingPage" value="다음 페이지로(처음이면 이걸 눌러주세요!)" onClick="wake()">
+        <input type="button" id="Bright" value="밝게?" onClick="bOrd()">
+    </form>
+</body>
+
+</html>
